@@ -41,8 +41,8 @@ Return the key referenced by *name*.
 
 **make_ref**(name, key)
 
-Create a new reference name, that, if **retrieve**d, will fetch the
-value stored at *key*
+Create a new reference name, that, if **retrieve** (see above), will
+fetch the value stored at *key*
 
 **delete**(key)
 
@@ -59,40 +59,58 @@ Does *key* exist in the store? Returns true or false
 
 # Example
 ```
-irb(main):001:0> require 'treestore'
+irb> require 'treestore'
 => true
-irb(main):002:0> t = TreeStore.new
+
+irb> t = TreeStore.new
 => #<TreeStore:0x007f8d2a980a58 @backend=#<RedisBackend:0x007f8d2a980a30 @redis=#<Redis client v3.1.0 for redis://127.0.0.1:6379/0>>, @namespace="tree-store">
-irb(main):003:0> t.add("foo")
+
+irb> t.add("foo")
 => "0beec7b5ea3f0fdbc95d0dd47f3c5bc275da8a33"
-irb(main):004:0> a = _
+
+irb> a = _
 => "0beec7b5ea3f0fdbc95d0dd47f3c5bc275da8a33"
-irb(main):005:0> items = [a]
+
+irb> items = [a]
 => ["0beec7b5ea3f0fdbc95d0dd47f3c5bc275da8a33"]
-irb(main):006:0> items << t.add("bar")
+
+irb> items << t.add("bar")
 => ["0beec7b5ea3f0fdbc95d0dd47f3c5bc275da8a33", "62cdb7020ff920e5aa642c3d4066950dd1f01f4d"]
-irb(main):007:0> tree = t.make_tree(items)
+
+irb> tree = t.make_tree(items)
 => "3eb4e0e693987b4bcb871a44e943b7223b5dd2e5"
-irb(main):009:0> t.retrieve(tree)
+
+irb> t.retrieve(tree)
 => ["62cdb7020ff920e5aa642c3d4066950dd1f01f4d", "0beec7b5ea3f0fdbc95d0dd47f3c5bc275da8a33"]
-irb(main):010:0> t.retrieve(t.retrieve(tree).first)
+
+irb> t.retrieve(t.retrieve(tree).first)
 => "bar"
-irb(main):011:0> t.retrieve(t.retrieve(tree)[1])
+
+irb> t.retrieve(t.retrieve(tree)[1])
 => "foo"
-irb(main):012:0> t.type(tree)
+
+irb> t.type(tree)
 => :tree
-irb(main):013:0> t.type(t.retrieve(tree)[1])
+
+irb> t.type(t.retrieve(tree)[1])
 => :blob
-irb(main):014:0> t.retrieve(tree)[1]
+
+irb> t.retrieve(tree)[1]
 => "0beec7b5ea3f0fdbc95d0dd47f3c5bc275da8a33"
-irb(main):015:0> t.retrieve(t.retrieve(tree)[1])
+
+irb> t.retrieve(t.retrieve(tree)[1])
 => "foo"
-irb(main):016:0> t.make_ref("foo's name", t.retrieve(tree)[1])
+
+irb> t.make_ref("foo's name", t.retrieve(tree)[1])
 => "foo's name"
-irb(main):017:0> t.retrieve("foo's name")
+
+irb> t.retrieve("foo's name")
 => "foo"
-irb(main):018:0> t.ref("foo's name")
+
+irb> t.ref("foo's name")
 => "0beec7b5ea3f0fdbc95d0dd47f3c5bc275da8a33"
-irb(main):019:0> t.type("foo's name")
+
+irb> t.type("foo's name")
 => :blob
+
 ```
